@@ -1,0 +1,20 @@
+{
+	"name": "daily-diet-api",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"dev": "tsx watch src/server.ts"
+	},
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"fastify": "^5.4.0",
+		"knex": "^3.1.0",
+		"typescript": "^5.8.3"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.15",
+		"@types/knex": "^0.15.2",
+		"tsx": "^4.20.3"
+	}
+}
