@@ -28,6 +28,6 @@ export async function usersRoutes(app: FastifyInstance) {
 			session_id: sessionId,
 		});
 
-		return reply.status(201).send({ name, email });
+		return reply.status(201).send();
 	});
 }
