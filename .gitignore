@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Coverage / test output
+coverage/
+
+# OS / editor
+.DS_Store
+.idea/
+*.swp
+
+# Claude Code / AI tooling — local-only, never commit
+CLAUDE.md
+.claude/
+# Superpowers skill docs (if generated into the project)
+.superpowers/
+**/SKILL.md

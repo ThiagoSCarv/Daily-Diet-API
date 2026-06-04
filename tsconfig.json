@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    /* Environment — Node.js 22 + CommonJS (matches package.json "type") */
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+
+    /* Emit */
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": false,
+    "removeComments": true,
+
+    /* Interop */
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,25 @@
+import { config as loadEnv } from 'dotenv'
+import { z } from 'zod'
+
+// Load the proper env file before validating. Tests use `.env.test`.
+loadEnv({
+  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+})
+
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
+  PORT: z.coerce.number().default(3333),
+  DATABASE_URL: z.url(),
+})
+
+const parsed = envSchema.safeParse(process.env)
+
+if (!parsed.success) {
+  console.error('❌ Invalid environment variables:')
+  console.error(z.flattenError(parsed.error).fieldErrors)
+  throw new Error('Invalid environment variables')
+}
+
+export const env = parsed.data
