@@ -1,10 +1,12 @@
+import path from 'node:path'
 import { config as loadEnv } from 'dotenv'
 import { z } from 'zod'
 
-// Load the proper env file before validating. Tests use `.env.test`.
-loadEnv({
-  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
-})
+// Resolve the env file from the project root regardless of the current working
+// directory — the Knex CLI chdir's into the knexfile's folder, so a plain
+// relative path would not resolve. Tests use `.env.test`.
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+loadEnv({ path: path.resolve(__dirname, '../..', envFile) })
 
 const envSchema = z.object({
   NODE_ENV: z
