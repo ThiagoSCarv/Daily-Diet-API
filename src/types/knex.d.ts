@@ -33,7 +33,10 @@ declare module 'knex/types/tables' {
     >
     meals: Knex.CompositeTableType<
       MealRow,
-      Pick<MealRow, 'user_id' | 'name' | 'description' | 'datetime' | 'is_on_diet'>,
+      Pick<
+        MealRow,
+        'user_id' | 'name' | 'description' | 'datetime' | 'is_on_diet'
+      >,
       Partial<Omit<MealRow, 'id' | 'user_id' | 'created_at'>>
     >
   }
