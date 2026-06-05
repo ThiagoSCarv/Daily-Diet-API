@@ -12,4 +12,8 @@ export const mealModel = {
   async findAllByUserId(userId: string): Promise<MealRow[]> {
     return knex('meals').where({ user_id: userId }).orderBy('datetime', 'desc')
   },
+
+  async findById(id: string): Promise<MealRow | undefined> {
+    return knex('meals').where({ id }).first()
+  },
 }

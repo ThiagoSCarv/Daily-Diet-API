@@ -94,3 +94,46 @@ describe('GET /meals', () => {
     expect(res.status).toBe(401)
   })
 })
+
+describe('GET /meals/:id', () => {
+  it('returns 200 with the meal', async () => {
+    const cookie = await createSession()
+    const created = await supertest(app.server)
+      .post('/meals')
+      .set('Cookie', cookie)
+      .send(makeMeal())
+    const id = created.body.id
+
+    const res = await supertest(app.server).get(`/meals/${id}`).set('Cookie', cookie)
+    expect(res.status).toBe(200)
+    expect(res.body.id).toBe(id)
+    expect(res.body.name).toBe(makeMeal().name)
+  })
+
+  it('returns 404 for a non-existent meal', async () => {
+    const cookie = await createSession()
+    const res = await supertest(app.server)
+      .get('/meals/00000000-0000-0000-0000-000000000000')
+      .set('Cookie', cookie)
+    expect(res.status).toBe(404)
+  })
+
+  it("returns 403 when accessing another user's meal", async () => {
+    const cookieA = await createSession()
+    const cookieB = await createSession({ email: 'other@example.com' })
+
+    const created = await supertest(app.server)
+      .post('/meals')
+      .set('Cookie', cookieA)
+      .send(makeMeal())
+    const id = created.body.id
+
+    const res = await supertest(app.server).get(`/meals/${id}`).set('Cookie', cookieB)
+    expect(res.status).toBe(403)
+  })
+
+  it('returns 401 without a session cookie', async () => {
+    const res = await supertest(app.server).get('/meals/00000000-0000-0000-0000-000000000000')
+    expect(res.status).toBe(401)
+  })
+})

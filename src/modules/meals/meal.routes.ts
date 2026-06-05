@@ -2,8 +2,8 @@ import type { FastifyInstance } from 'fastify'
 import { authenticate } from '../../middlewares/authenticate'
 import { toJsonSchema } from '../../utils/jsonSchema'
 import { mealController } from './meal.controller'
-import type { CreateMealBody } from './meal.schema'
-import { createMealBodySchema, mealResponseSchema, mealsListResponseSchema } from './meal.schema'
+import type { CreateMealBody, MealParams } from './meal.schema'
+import { createMealBodySchema, mealParamsSchema, mealResponseSchema, mealsListResponseSchema } from './meal.schema'
 
 export async function mealRoutes(app: FastifyInstance) {
   app.post<{ Body: CreateMealBody }>('/meals', {
@@ -32,5 +32,21 @@ export async function mealRoutes(app: FastifyInstance) {
     },
     preHandler: [authenticate],
     handler: mealController.list,
+  })
+
+  app.get<{ Params: MealParams }>('/meals/:id', {
+    schema: {
+      tags: ['Meals'],
+      summary: 'Get a single meal by ID',
+      params: toJsonSchema(mealParamsSchema),
+      response: {
+        200: toJsonSchema(mealResponseSchema),
+        401: { description: 'Unauthorized' },
+        403: { description: 'Forbidden' },
+        404: { description: 'Not found' },
+      },
+    },
+    preHandler: [authenticate],
+    handler: mealController.getOne,
   })
 }

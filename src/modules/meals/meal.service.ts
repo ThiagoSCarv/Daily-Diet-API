@@ -1,4 +1,5 @@
 import type { MealRow } from '../../types/knex'
+import { MealForbiddenError, MealNotFoundError } from '../../utils/errors'
 import { mealModel } from './meal.model'
 import type { CreateMealBody } from './meal.schema'
 
@@ -15,5 +16,12 @@ export const mealService = {
 
   async listMeals(userId: string): Promise<MealRow[]> {
     return mealModel.findAllByUserId(userId)
+  },
+
+  async getMeal(userId: string, id: string): Promise<MealRow> {
+    const meal = await mealModel.findById(id)
+    if (!meal) throw new MealNotFoundError()
+    if (meal.user_id !== userId) throw new MealForbiddenError()
+    return meal
   },
 }

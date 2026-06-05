@@ -1,6 +1,6 @@
 import type { RouteHandler } from 'fastify'
 import type { MealRow } from '../../types/knex'
-import type { CreateMealBody, MealResponse } from './meal.schema'
+import type { CreateMealBody, MealParams, MealResponse } from './meal.schema'
 import { mealService } from './meal.service'
 
 function serializeMeal(meal: MealRow): MealResponse {
@@ -26,4 +26,9 @@ export const mealController = {
     const meals = await mealService.listMeals(request.user.id)
     return reply.send(meals.map(serializeMeal))
   }) satisfies RouteHandler,
+
+  getOne: (async (request, reply) => {
+    const meal = await mealService.getMeal(request.user.id, request.params.id)
+    return reply.send(serializeMeal(meal))
+  }) satisfies RouteHandler<{ Params: MealParams }>,
 }
