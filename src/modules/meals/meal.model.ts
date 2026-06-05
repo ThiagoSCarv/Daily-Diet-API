@@ -14,7 +14,7 @@ export const mealModel = {
     return knex('meals').where({ user_id: userId }).orderBy('datetime', 'desc')
   },
 
-  async findAllByUserIdOrdered(userId: string): Promise<MealRow[]> {
+  async findAllByUserIdChronological(userId: string): Promise<MealRow[]> {
     return knex('meals').where({ user_id: userId }).orderBy('datetime', 'asc')
   },
 
