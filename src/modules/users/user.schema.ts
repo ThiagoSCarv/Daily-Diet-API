@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Request body for creating a user. `.strict()` rejects unknown fields (400).
 export const createUserBodySchema = z
   .object({
     name: z.string().min(1),
@@ -8,7 +7,6 @@ export const createUserBodySchema = z
   })
   .strict()
 
-// Public user representation. Never includes `session_id`.
 export const userResponseSchema = z.object({
   id: z.uuid(),
   name: z.string(),

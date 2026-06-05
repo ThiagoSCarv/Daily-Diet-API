@@ -1,6 +1,5 @@
 import type { Knex } from 'knex'
 
-// Row shapes as stored in PostgreSQL (what a SELECT returns).
 export interface UserRow {
   id: string
   name: string
@@ -21,9 +20,6 @@ export interface MealRow {
   updated_at: Date
 }
 
-// Augments Knex so `knex('users')` / `knex('meals')` are fully typed.
-// CompositeTableType<Base, Insert, Update> keeps DB-generated columns
-// (id, created_at, updated_at) optional on insert and update.
 declare module 'knex/types/tables' {
   interface Tables {
     users: Knex.CompositeTableType<

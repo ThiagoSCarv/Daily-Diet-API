@@ -3,8 +3,6 @@ import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS } from '../../config/constants'
 import type { CreateUserInput, UserResponse } from './user.schema'
 import { userService } from './user.service'
 
-// Thin controller: delegate to the service, set the session cookie, shape the
-// response. No business logic here.
 export const userController = {
   create: (async (request, reply) => {
     const user = await userService.createUser(request.body)

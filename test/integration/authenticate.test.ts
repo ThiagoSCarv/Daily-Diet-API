@@ -5,7 +5,6 @@ import { authenticate } from '../../src/middlewares/authenticate'
 import { makeUser } from '../fixtures/userFixture'
 import { cleanTestDatabase, destroyTestDatabase } from '../helpers/database'
 
-// Build an app instance with a protected route to exercise the middleware.
 const app = buildApp()
 app.get('/protected', { preHandler: [authenticate] }, async (request) => ({
   id: request.user.id,
