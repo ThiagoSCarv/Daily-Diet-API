@@ -39,4 +39,5 @@ export type CreateMealBody = z.infer<typeof createMealBodySchema>
 export type UpdateMealBody = z.infer<typeof updateMealBodySchema>
 export type MealParams = z.infer<typeof mealParamsSchema>
 export type MealResponse = z.infer<typeof mealResponseSchema>
+export type MealsListResponse = z.infer<typeof mealsListResponseSchema>
 export type MetricsResponse = z.infer<typeof metricsResponseSchema>
