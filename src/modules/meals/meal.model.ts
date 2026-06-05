@@ -1,6 +1,7 @@
 import { knex } from '../../db/knex'
 import type { MealRow } from '../../types/knex'
 import type { CreateMealData } from './interfaces/createMealData'
+import type { UpdateMealData } from './interfaces/updateMealData'
 
 export const mealModel = {
   async create(data: CreateMealData): Promise<MealRow> {
@@ -15,5 +16,11 @@ export const mealModel = {
 
   async findById(id: string): Promise<MealRow | undefined> {
     return knex('meals').where({ id }).first()
+  },
+
+  async update(id: string, data: UpdateMealData): Promise<MealRow> {
+    const [meal] = await knex('meals').where({ id }).update(data).returning('*')
+    if (!meal) throw new Error('Failed to update meal')
+    return meal
   },
 }

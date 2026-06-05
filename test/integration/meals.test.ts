@@ -137,3 +137,63 @@ describe('GET /meals/:id', () => {
     expect(res.status).toBe(401)
   })
 })
+
+describe('PUT /meals/:id', () => {
+  it('returns 200 with updated meal', async () => {
+    const cookie = await createSession()
+    const created = await supertest(app.server)
+      .post('/meals')
+      .set('Cookie', cookie)
+      .send(makeMeal())
+    const id = created.body.id
+
+    const res = await supertest(app.server)
+      .put(`/meals/${id}`)
+      .set('Cookie', cookie)
+      .send({ name: 'Updated Name', is_on_diet: false })
+
+    expect(res.status).toBe(200)
+    expect(res.body.name).toBe('Updated Name')
+    expect(res.body.is_on_diet).toBe(false)
+    expect(res.body.description).toBe(makeMeal().description)
+  })
+
+  it("returns 403 when editing another user's meal", async () => {
+    const cookieA = await createSession()
+    const cookieB = await createSession({ email: 'other@example.com' })
+
+    const created = await supertest(app.server)
+      .post('/meals')
+      .set('Cookie', cookieA)
+      .send(makeMeal())
+    const id = created.body.id
+
+    const res = await supertest(app.server)
+      .put(`/meals/${id}`)
+      .set('Cookie', cookieB)
+      .send({ name: 'Hijacked' })
+    expect(res.status).toBe(403)
+  })
+
+  it('returns 400 for unknown fields', async () => {
+    const cookie = await createSession()
+    const created = await supertest(app.server)
+      .post('/meals')
+      .set('Cookie', cookie)
+      .send(makeMeal())
+    const id = created.body.id
+
+    const res = await supertest(app.server)
+      .put(`/meals/${id}`)
+      .set('Cookie', cookie)
+      .send({ unknown: 'field' })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 401 without a session cookie', async () => {
+    const res = await supertest(app.server)
+      .put('/meals/00000000-0000-0000-0000-000000000000')
+      .send({ name: 'Name' })
+    expect(res.status).toBe(401)
+  })
+})

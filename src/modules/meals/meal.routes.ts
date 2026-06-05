@@ -2,8 +2,8 @@ import type { FastifyInstance } from 'fastify'
 import { authenticate } from '../../middlewares/authenticate'
 import { toJsonSchema } from '../../utils/jsonSchema'
 import { mealController } from './meal.controller'
-import type { CreateMealBody, MealParams } from './meal.schema'
-import { createMealBodySchema, mealParamsSchema, mealResponseSchema, mealsListResponseSchema } from './meal.schema'
+import type { CreateMealBody, MealParams, UpdateMealBody } from './meal.schema'
+import { createMealBodySchema, mealParamsSchema, mealResponseSchema, mealsListResponseSchema, updateMealBodySchema } from './meal.schema'
 
 export async function mealRoutes(app: FastifyInstance) {
   app.post<{ Body: CreateMealBody }>('/meals', {
@@ -48,5 +48,23 @@ export async function mealRoutes(app: FastifyInstance) {
     },
     preHandler: [authenticate],
     handler: mealController.getOne,
+  })
+
+  app.put<{ Params: MealParams; Body: UpdateMealBody }>('/meals/:id', {
+    schema: {
+      tags: ['Meals'],
+      summary: 'Edit an existing meal',
+      params: toJsonSchema(mealParamsSchema),
+      body: toJsonSchema(updateMealBodySchema),
+      response: {
+        200: toJsonSchema(mealResponseSchema),
+        400: { description: 'Validation error' },
+        401: { description: 'Unauthorized' },
+        403: { description: 'Forbidden' },
+        404: { description: 'Not found' },
+      },
+    },
+    preHandler: [authenticate],
+    handler: mealController.update,
   })
 }
