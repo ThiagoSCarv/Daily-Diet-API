@@ -241,3 +241,53 @@ describe('DELETE /meals/:id', () => {
     expect(res.status).toBe(401)
   })
 })
+
+describe('GET /users/metrics', () => {
+  it('returns zero metrics when no meals exist', async () => {
+    const cookie = await createSession()
+    const res = await supertest(app.server).get('/users/metrics').set('Cookie', cookie)
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ total: 0, on_diet: 0, off_diet: 0, best_streak: 0 })
+  })
+
+  it('returns correct counts and best streak', async () => {
+    const cookie = await createSession()
+    // Sequence (datetime ASC): on, on, off, on, on, on
+    // Streak 1: 2, streak 2: 3 → best_streak = 3
+    const sequence = [
+      { datetime: '2026-06-01T08:00:00.000Z', is_on_diet: true },
+      { datetime: '2026-06-02T08:00:00.000Z', is_on_diet: true },
+      { datetime: '2026-06-03T08:00:00.000Z', is_on_diet: false },
+      { datetime: '2026-06-04T08:00:00.000Z', is_on_diet: true },
+      { datetime: '2026-06-05T08:00:00.000Z', is_on_diet: true },
+      { datetime: '2026-06-06T08:00:00.000Z', is_on_diet: true },
+    ]
+
+    for (const overrides of sequence) {
+      await supertest(app.server).post('/meals').set('Cookie', cookie).send(makeMeal(overrides))
+    }
+
+    const res = await supertest(app.server).get('/users/metrics').set('Cookie', cookie)
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ total: 6, on_diet: 5, off_diet: 1, best_streak: 3 })
+  })
+
+  it('returns metrics only for the authenticated user', async () => {
+    const cookieA = await createSession()
+    const cookieB = await createSession({ email: 'other@example.com' })
+
+    await supertest(app.server).post('/meals').set('Cookie', cookieA).send(makeMeal())
+    await supertest(app.server).post('/meals').set('Cookie', cookieA).send(makeMeal({ datetime: '2026-06-06T08:00:00.000Z' }))
+    await supertest(app.server).post('/meals').set('Cookie', cookieB).send(makeMeal({ is_on_diet: false }))
+
+    const res = await supertest(app.server).get('/users/metrics').set('Cookie', cookieA)
+    expect(res.status).toBe(200)
+    expect(res.body.total).toBe(2)
+    expect(res.body.off_diet).toBe(0)
+  })
+
+  it('returns 401 without a session cookie', async () => {
+    const res = await supertest(app.server).get('/users/metrics')
+    expect(res.status).toBe(401)
+  })
+})

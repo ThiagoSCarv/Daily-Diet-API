@@ -3,7 +3,7 @@ import { authenticate } from '../../middlewares/authenticate'
 import { toJsonSchema } from '../../utils/jsonSchema'
 import { mealController } from './meal.controller'
 import type { CreateMealBody, MealParams, UpdateMealBody } from './meal.schema'
-import { createMealBodySchema, mealParamsSchema, mealResponseSchema, mealsListResponseSchema, updateMealBodySchema } from './meal.schema'
+import { createMealBodySchema, mealParamsSchema, mealResponseSchema, mealsListResponseSchema, metricsResponseSchema, updateMealBodySchema } from './meal.schema'
 
 export async function mealRoutes(app: FastifyInstance) {
   app.post<{ Body: CreateMealBody }>('/meals', {
@@ -82,5 +82,18 @@ export async function mealRoutes(app: FastifyInstance) {
     },
     preHandler: [authenticate],
     handler: mealController.remove,
+  })
+
+  app.get('/users/metrics', {
+    schema: {
+      tags: ['Users'],
+      summary: 'Get diet metrics for the authenticated user',
+      response: {
+        200: toJsonSchema(metricsResponseSchema),
+        401: { description: 'Unauthorized' },
+      },
+    },
+    preHandler: [authenticate],
+    handler: mealController.metrics,
   })
 }

@@ -2,7 +2,7 @@ import type { MealRow } from '../../types/knex'
 import { MealForbiddenError, MealNotFoundError } from '../../utils/errors'
 import type { UpdateMealData } from './interfaces/updateMealData'
 import { mealModel } from './meal.model'
-import type { CreateMealBody, UpdateMealBody } from './meal.schema'
+import type { CreateMealBody, MetricsResponse, UpdateMealBody } from './meal.schema'
 
 export const mealService = {
   async createMeal(userId: string, input: CreateMealBody): Promise<MealRow> {
@@ -44,5 +44,29 @@ export const mealService = {
     if (!meal) throw new MealNotFoundError()
     if (meal.user_id !== userId) throw new MealForbiddenError()
     await mealModel.deleteById(id)
+  },
+
+  async getMetrics(userId: string): Promise<MetricsResponse> {
+    const meals = await mealModel.findAllByUserIdOrdered(userId)
+    let currentStreak = 0
+    let bestStreak = 0
+    let onDiet = 0
+
+    for (const meal of meals) {
+      if (meal.is_on_diet) {
+        currentStreak++
+        onDiet++
+        if (currentStreak > bestStreak) bestStreak = currentStreak
+      } else {
+        currentStreak = 0
+      }
+    }
+
+    return {
+      total: meals.length,
+      on_diet: onDiet,
+      off_diet: meals.length - onDiet,
+      best_streak: bestStreak,
+    }
   },
 }

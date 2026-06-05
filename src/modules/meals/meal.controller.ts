@@ -45,4 +45,9 @@ export const mealController = {
     await mealService.deleteMeal(request.user.id, request.params.id)
     return reply.status(204).send()
   }) satisfies RouteHandler<{ Params: MealParams }>,
+
+  metrics: (async (request, reply) => {
+    const result = await mealService.getMetrics(request.user.id)
+    return reply.send(result)
+  }) satisfies RouteHandler,
 }
