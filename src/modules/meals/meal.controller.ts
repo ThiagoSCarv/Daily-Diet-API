@@ -21,4 +21,9 @@ export const mealController = {
     const meal = await mealService.createMeal(request.user.id, request.body)
     return reply.status(201).send(serializeMeal(meal))
   }) satisfies RouteHandler<{ Body: CreateMealBody }>,
+
+  list: (async (request, reply) => {
+    const meals = await mealService.listMeals(request.user.id)
+    return reply.send(meals.map(serializeMeal))
+  }) satisfies RouteHandler,
 }

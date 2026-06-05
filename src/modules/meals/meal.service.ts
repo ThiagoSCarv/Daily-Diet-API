@@ -12,4 +12,8 @@ export const mealService = {
       is_on_diet: input.is_on_diet,
     })
   },
+
+  async listMeals(userId: string): Promise<MealRow[]> {
+    return mealModel.findAllByUserId(userId)
+  },
 }

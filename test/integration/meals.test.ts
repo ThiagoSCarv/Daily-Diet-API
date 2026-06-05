@@ -67,3 +67,30 @@ describe('POST /meals', () => {
     expect(res.status).toBe(400)
   })
 })
+
+describe('GET /meals', () => {
+  it('returns 200 with an empty list when no meals exist', async () => {
+    const cookie = await createSession()
+    const res = await supertest(app.server).get('/meals').set('Cookie', cookie)
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual([])
+  })
+
+  it('returns only the authenticated user\'s meals', async () => {
+    const cookieA = await createSession()
+    const cookieB = await createSession({ email: 'other@example.com' })
+
+    await supertest(app.server).post('/meals').set('Cookie', cookieA).send(makeMeal({ name: 'Meal A' }))
+    await supertest(app.server).post('/meals').set('Cookie', cookieB).send(makeMeal({ name: 'Meal B' }))
+
+    const res = await supertest(app.server).get('/meals').set('Cookie', cookieA)
+    expect(res.status).toBe(200)
+    expect(res.body).toHaveLength(1)
+    expect(res.body[0].name).toBe('Meal A')
+  })
+
+  it('returns 401 without a session cookie', async () => {
+    const res = await supertest(app.server).get('/meals')
+    expect(res.status).toBe(401)
+  })
+})

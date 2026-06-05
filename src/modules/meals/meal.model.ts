@@ -8,4 +8,8 @@ export const mealModel = {
     if (!meal) throw new Error('Failed to create meal')
     return meal
   },
+
+  async findAllByUserId(userId: string): Promise<MealRow[]> {
+    return knex('meals').where({ user_id: userId }).orderBy('datetime', 'desc')
+  },
 }
