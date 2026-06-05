@@ -23,4 +23,8 @@ export const mealModel = {
     if (!meal) throw new Error('Failed to update meal')
     return meal
   },
+
+  async deleteById(id: string): Promise<void> {
+    await knex('meals').where({ id }).delete()
+  },
 }

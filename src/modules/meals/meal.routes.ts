@@ -67,4 +67,20 @@ export async function mealRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
     handler: mealController.update,
   })
+
+  app.delete<{ Params: MealParams }>('/meals/:id', {
+    schema: {
+      tags: ['Meals'],
+      summary: 'Delete a meal',
+      params: toJsonSchema(mealParamsSchema),
+      response: {
+        204: { description: 'No content' },
+        401: { description: 'Unauthorized' },
+        403: { description: 'Forbidden' },
+        404: { description: 'Not found' },
+      },
+    },
+    preHandler: [authenticate],
+    handler: mealController.remove,
+  })
 }

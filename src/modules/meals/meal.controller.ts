@@ -40,4 +40,9 @@ export const mealController = {
     )
     return reply.send(serializeMeal(meal))
   }) satisfies RouteHandler<{ Params: MealParams; Body: UpdateMealBody }>,
+
+  remove: (async (request, reply) => {
+    await mealService.deleteMeal(request.user.id, request.params.id)
+    return reply.status(204).send()
+  }) satisfies RouteHandler<{ Params: MealParams }>,
 }

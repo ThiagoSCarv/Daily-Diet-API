@@ -197,3 +197,47 @@ describe('PUT /meals/:id', () => {
     expect(res.status).toBe(401)
   })
 })
+
+describe('DELETE /meals/:id', () => {
+  it('returns 204 and the meal is no longer retrievable', async () => {
+    const cookie = await createSession()
+    const created = await supertest(app.server)
+      .post('/meals')
+      .set('Cookie', cookie)
+      .send(makeMeal())
+    const id = created.body.id
+
+    const del = await supertest(app.server).delete(`/meals/${id}`).set('Cookie', cookie)
+    expect(del.status).toBe(204)
+
+    const get = await supertest(app.server).get(`/meals/${id}`).set('Cookie', cookie)
+    expect(get.status).toBe(404)
+  })
+
+  it("returns 403 when deleting another user's meal", async () => {
+    const cookieA = await createSession()
+    const cookieB = await createSession({ email: 'other@example.com' })
+
+    const created = await supertest(app.server)
+      .post('/meals')
+      .set('Cookie', cookieA)
+      .send(makeMeal())
+    const id = created.body.id
+
+    const res = await supertest(app.server).delete(`/meals/${id}`).set('Cookie', cookieB)
+    expect(res.status).toBe(403)
+  })
+
+  it('returns 404 for a non-existent meal', async () => {
+    const cookie = await createSession()
+    const res = await supertest(app.server)
+      .delete('/meals/00000000-0000-0000-0000-000000000000')
+      .set('Cookie', cookie)
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 401 without a session cookie', async () => {
+    const res = await supertest(app.server).delete('/meals/00000000-0000-0000-0000-000000000000')
+    expect(res.status).toBe(401)
+  })
+})
