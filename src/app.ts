@@ -2,9 +2,8 @@ import cookie from '@fastify/cookie'
 import sensible from '@fastify/sensible'
 import fastify from 'fastify'
 import { env } from './config/env'
-import { mealRoutes } from './modules/meals/meal.routes'
-import { userRoutes } from './modules/users/user.routes'
 import swaggerPlugin from './plugins/swagger'
+import { registerRoutes } from './routes'
 
 export function buildApp() {
   const app = fastify({
@@ -16,8 +15,7 @@ export function buildApp() {
   app.register(sensible)
   app.register(swaggerPlugin)
 
-  app.register(userRoutes)
-  app.register(mealRoutes)
+  registerRoutes(app)
 
   return app
 }
